@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Analytics System</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f6f9;
+            color: #222;
+        }
+
+        header {
+            background: #1f2937;
+            color: white;
+            padding: 20px 40px;
+        }
+
+        header h1 {
+            margin-bottom: 5px;
+        }
+
+        header p {
+            color: #d1d5db;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 30px auto;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .card h3 {
+            color: #6b7280;
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .box {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .box h2 {
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: grid;
+            gap: 15px;
+        }
+
+        input,
+        select,
+        button {
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 250px;
+            border-bottom: 2px solid #333;
+            padding: 20px 10px 0;
+        }
+
+        .bar-container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            width: 12%;
+        }
+
+        .bar {
+            width: 35px;
+            background: #2563eb;
+            border-radius: 5px 5px 0 0;
+            min-height: 3px;
+        }
+
+        .bar-label {
+            margin-top: 8px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .bar-value {
+            font-size: 11px;
+            margin-bottom: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            background: #f9fafb;
+        }
+
+        .delete-btn {
+            background: #dc2626;
+            padding: 7px 12px;
+        }
+
+        .delete-btn:hover {
+            background: #b91c1c;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 20px;
+            color: #6b7280;
+        }
+
+        @media (max-width: 800px) {
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                width: 95%;
+            }
+
+            header {
+                padding: 20px;
+            }
+
+            table {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Expense Analytics System</h1>
+    <p>Track and analyze your daily expenses</p>
+</header>
+
+<div class="container">
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>Total Expenses</h3>
+            <p id="totalExpense">₹0</p>
+        </div>
+
+        <div class="card">
+            <h3>Average Expense</h3>
+            <p id="averageExpense">₹0</p>
+        </div>
+
+        <div class="card">
+            <h3>Highest Expense</h3>
+            <p id="highestExpense">₹0</p>
+        </div>
+
+        <div class="card">
+            <h3>Total Transactions</h3>
+            <p id="transactionCount">0</p>
+        </div>
+
+    </div>
+
+    <div class="main-grid">
+
+        <div class="box">
+            <h2>Add Expense</h2>
+
+            <form id="expenseForm">
+
+                <input
+                    type="text"
+                    id="description"
+                    placeholder="Expense description"
+                    required
+                >
+
+                <input
+                    type="number"
+                    id="amount"
+                    placeholder="Amount"
+                    min="1"
+                    required
+                >
+
+                <select id="category" required>
+                    <option value="">Select Category</option>
+                    <option value="Food">Food</option>
+                    <option value="Travel">Travel</option>
+                    <option value="Shopping">Shopping</option>
+                    <option value="Bills">Bills</option>
+                    <option value="Education">Education</option>
+                    <option value="Entertainment">Entertainment</option>
+                    <option value="Other">Other</option>
+                </select>
+
+                <input
+                    type="date"
+                    id="date"
+                    required
+                >
+
+                <button type="submit">Add Expense</button>
+
+            </form>
+        </div>
+
+        <div class="box">
+            <h2>Category Analytics</h2>
+
+            <div class="chart" id="chart"></div>
+        </div>
+
+    </div>
+
+    <div class="box">
+        <h2>Expense History</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody id="expenseTable">
+            </tbody>
+        </table>
+
+        <div id="emptyMessage" class="empty">
+            No expenses added yet.
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+    let expenses = JSON.parse(localStorage.getItem("expenses")) || [];
+
+    const form = document.getElementById("expenseForm");
+
+    form.addEventListener("submit", function(event) {
+
+        event.preventDefault();
+
+        const description =
+            document.getElementById("description").value;
+
+        const amount =
+            Number(document.getElementById("amount").value);
+
+        const category =
+            document.getElementById("category").value;
+
+        const date =
+            document.getElementById("date").value;
+
+        const expense = {
+            id: Date.now(),
+            description: description,
+            amount: amount,
+            category: category,
+            date: date
+        };
+
+        expenses.push(expense);
+
+        saveExpenses();
+
+        form.reset();
+
+        document.getElementById("date").value =
+            new Date().toISOString().split("T")[0];
+
+    });
+
+
+    function saveExpenses() {
+
+        localStorage.setItem(
+            "expenses",
+            JSON.stringify(expenses)
+        );
+
+        displayExpenses();
+        updateAnalytics();
+        updateChart();
+    }
+
+
+    function displayExpenses() {
+
+        const table =
+            document.getElementById("expenseTable");
+
+        const emptyMessage =
+            document.getElementById("emptyMessage");
+
+        table.innerHTML = "";
+
+        if (expenses.length === 0) {
+            emptyMessage.style.display = "block";
+            return;
+        }
+
+        emptyMessage.style.display = "none";
+
+        expenses.forEach(function(expense) {
+
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${expense.description}</td>
+                <td>₹${expense.amount.toLocaleString()}</td>
+                <td>${expense.category}</td>
+                <td>${expense.date}</td>
+                <td>
+                    <button
+                        class="delete-btn"
+                        onclick="deleteExpense(${expense.id})">
+                        Delete
+                    </button>
+                </td>
+            `;
+
+            table.appendChild(row);
+        });
+    }
+
+
+    function deleteExpense(id) {
+
+        expenses = expenses.filter(function(expense) {
+            return expense.id !== id;
+        });
+
+        saveExpenses();
+    }
+
+
+    function updateAnalytics() {
+
+        const total =
+            expenses.reduce(function(sum, expense) {
+                return sum + expense.amount;
+            }, 0);
+
+        const count = expenses.length;
+
+        const average =
+            count > 0 ? total / count : 0;
+
+        const highest =
+            count > 0
+                ? Math.max(...expenses.map(expense => expense.amount))
+                : 0;
+
+        document.getElementById("totalExpense").textContent =
+            "₹" + total.toLocaleString();
+
+        document.getElementById("averageExpense").textContent =
+            "₹" + Math.round(average).toLocaleString();
+
+        document.getElementById("highestExpense").textContent =
+            "₹" + highest.toLocaleString();
+
+        document.getElementById("transactionCount").textContent =
+            count;
+    }
+
+
+    function updateChart() {
+
+        const categories = [
+            "Food",
+            "Travel",
+            "Shopping",
+            "Bills",
+            "Education",
+            "Entertainment",
+            "Other"
+        ];
+
+        const categoryTotals = {};
+
+        categories.forEach(function(category) {
+            categoryTotals[category] = 0;
+        });
+
+        expenses.forEach(function(expense) {
+
+            categoryTotals[expense.category] +=
+                expense.amount;
+
+        });
+
+        const maxValue =
+            Math.max(...Object.values(categoryTotals), 1);
+
+        const chart =
+            document.getElementById("chart");
+
+        chart.innerHTML = "";
+
+        categories.forEach(function(category) {
+
+            const value = categoryTotals[category];
+
+            const height =
+                (value / maxValue) * 180;
+
+            const container =
+                document.createElement("div");
+
+            container.className = "bar-container";
+
+            container.innerHTML = `
+                <div class="bar-value">
+                    ₹${value}
+                </div>
+
+                <div
+                    class="bar"
+                    style="height: ${height}px">
+                </div>
+
+                <div class="bar-label">
+                    ${category}
+                </div>
+            `;
+
+            chart.appendChild(container);
+        });
+    }
+
+
+    document.getElementById("date").value =
+        new Date().toISOString().split("T")[0];
+
+    displayExpenses();
+    updateAnalytics();
+    updateChart();
+
+</script>
+
+</body>
+</html>
