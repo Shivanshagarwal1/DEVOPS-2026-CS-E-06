@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     stages {
+
         stage('Checkout') {
             steps {
                 checkout scm
@@ -26,6 +27,7 @@ pipeline {
             emailext(
                 to: 'syed.burhan.441@gmail.com,shivagrawal820@gmail.com,shreyan.sachdeva2402@gmail.com',
                 subject: "Jenkins | ${JOB_NAME} | Build #${BUILD_NUMBER} | ${currentBuild.currentResult}",
+                body: '$DEFAULT_CONTENT',
                 mimeType: 'text/html'
             )
         }
