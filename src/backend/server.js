@@ -4,17 +4,14 @@ const app = express();
 
 const PORT = 3000;
 
-// Middleware
 app.use(express.json());
 app.use(express.static("public"));
 
-// Temporary user storage
+
 let users = [];
 
 
-// ===============================
-// TEST ROUTE
-// ===============================
+
 
 app.get("/api/test", (req, res) => {
     res.json({
@@ -24,15 +21,10 @@ app.get("/api/test", (req, res) => {
 });
 
 
-// ===============================
-// REGISTRATION API
-// ===============================
-
 app.post("/api/register", (req, res) => {
 
     const { name, email, password } = req.body;
 
-    // Validate fields
     if (!name || !email || !password) {
 
         return res.status(400).json({
@@ -42,7 +34,6 @@ app.post("/api/register", (req, res) => {
 
     }
 
-    // Check if user already exists
     const existingUser = users.find(
         user => user.email === email
     );
@@ -56,7 +47,6 @@ app.post("/api/register", (req, res) => {
 
     }
 
-    // Create new user
     const newUser = {
         id: users.length + 1,
         name: name,
@@ -64,7 +54,6 @@ app.post("/api/register", (req, res) => {
         password: password
     };
 
-    // Store user
     users.push(newUser);
 
     console.log("New user registered:", email);
@@ -77,15 +66,10 @@ app.post("/api/register", (req, res) => {
 });
 
 
-// ===============================
-// LOGIN API
-// ===============================
-
 app.post("/api/login", (req, res) => {
 
     const { email, password } = req.body;
 
-    // Validate fields
     if (!email || !password) {
 
         return res.status(400).json({
@@ -95,14 +79,12 @@ app.post("/api/login", (req, res) => {
 
     }
 
-    // Find user
     const user = users.find(
         user =>
             user.email === email &&
             user.password === password
     );
 
-    // User found
     if (user) {
 
         console.log("User logged in:", email);
@@ -119,7 +101,6 @@ app.post("/api/login", (req, res) => {
 
     }
 
-    // Invalid credentials
     res.status(401).json({
         success: false,
         message: "Invalid email or password"
@@ -128,9 +109,7 @@ app.post("/api/login", (req, res) => {
 });
 
 
-// ===============================
-// START SERVER
-// ===============================
+
 
 app.listen(PORT, () => {
 
