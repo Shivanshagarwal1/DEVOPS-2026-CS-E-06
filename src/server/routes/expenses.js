@@ -1,0 +1,10 @@
+const r = require('express').Router();
+const c = require('../controllers/transactionController');
+const auth = require('../middleware/auth');
+const ah = require('../utils/ah');
+r.use(auth);
+r.get('/', ah(c.listExpenses));
+r.post('/', ah(c.createExpense));
+r.put('/:id', ah(c.update));
+r.delete('/:id', ah(c.remove));
+module.exports = r;
