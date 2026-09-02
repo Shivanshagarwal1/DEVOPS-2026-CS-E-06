@@ -17,6 +17,12 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 # -------------------------------------------------------------
 COLLEGE_NAME = "Swami Keshvanand Institute of Technology, Management & Gramothan, Jaipur"
 DEPARTMENT_NAME = "Department of Computer Science & Engineering"
+
+# Map alternative commit names/usernames to official student names
+AUTHOR_ALIASES = {
+    "fidelboi": "syed burhan",
+    "Shreyan-sachdeva": "Shreyan Sachdeva"
+}
 # -------------------------------------------------------------
 
 def get_repo_info():
@@ -48,7 +54,7 @@ def get_git_metrics(interval="weekly"):
     """
     today = datetime.date.today()
     git_args = ['git', 'log', '--no-merges', '--pretty=format:COMMIT|||%h|||%an|||%ad|||%s', '--date=short', '--numstat']
-    
+
     if interval == "weekly":
         since_date = (today - datetime.timedelta(days=7)).strftime("%Y-%m-%d")
         git_args.append(f"--since={since_date}")
@@ -77,29 +83,30 @@ def get_git_metrics(interval="weekly"):
         line = line.strip()
         if not line:
             continue
-            
+
         if line.startswith('COMMIT|||'):
             parts = line.split('|||')
             if len(parts) >= 5:
                 sha = parts[1].strip()
-                author = parts[2].strip()
+                raw_author = parts[2].strip()
                 date_str = parts[3].strip()
                 msg = parts[4].strip()
             else:
                 continue
-            
+
             # Exclude bot commits from metric calculations
-            if "bot" in author.lower() or "github-actions" in author.lower():
+            if "bot" in raw_author.lower() or "github-actions" in raw_author.lower():
                 current_author = None
                 continue
-            
-            current_author = author
+
+            # Normalize author name using the alias map
+            current_author = AUTHOR_ALIASES.get(raw_author, raw_author)
             current_date_str = date_str
-            
+
             students[current_author]["commits"] += 1
             students[current_author]["active_days"].add(current_date_str)
             student_logs[current_author].append((date_str, sha, msg))
-            
+
             try:
                 dt = datetime.datetime.strptime(current_date_str, "%Y-%m-%d").date()
                 if interval == "weekly":
@@ -165,7 +172,7 @@ def generate_pdf(interval="weekly"):
         return
 
     date_stamp = datetime.date.today().strftime("%Y-%m-%d")
-    
+
     if interval == "weekly":
         report_title = "Weekly Progress Report"
         doc_name = f"{repo_name}_Weekly_Progress_Report_Form-3_{date_stamp}.pdf"
@@ -186,7 +193,7 @@ def generate_pdf(interval="weekly"):
     )
 
     styles = getSampleStyleSheet()
-    
+
     college_style = ParagraphStyle(
         'CollegeStyle', parent=styles['Heading1'],
         fontSize=13.5, leading=17, textColor=colors.HexColor("#0F172A"), alignment=1, spaceAfter=2
@@ -240,7 +247,7 @@ def generate_pdf(interval="weekly"):
     story.append(Paragraph("1. Individual Contribution Breakdown", section_style))
     total_commits = sum(data["commits"] for data in students.values())
     table_data = [["Student Name", "Commits (%)", "Lines Added", "Lines Deleted", "Net LOC", "Active Days"]]
-    
+
     if students:
         for name, data in students.items():
             pct = (data["commits"] / total_commits * 100) if total_commits > 0 else 0
@@ -286,7 +293,7 @@ def generate_pdf(interval="weekly"):
         for student_name, logs in student_logs.items():
             student_section = []
             student_section.append(Paragraph(f"<b>Student:</b> {html.escape(student_name)} — <i>{len(logs)} commit(s)</i>", sub_section_style))
-            
+
             log_table_data = [["Date", "Hash", "Commit Message"]]
             for date_val, sha_val, msg_val in logs:
                 safe_msg = html.escape(msg_val) if msg_val else "(No commit message)"
@@ -295,7 +302,7 @@ def generate_pdf(interval="weekly"):
                     Paragraph(f"<code>{sha_val}</code>", meta_cell_style),
                     Paragraph(safe_msg, msg_style)
                 ])
-            
+
             log_table = Table(log_table_data, colWidths=[70, 60, 410])
             t_style = [
                 ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#475569")),
@@ -308,7 +315,7 @@ def generate_pdf(interval="weekly"):
                 ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor("#CBD5E1")),
                 ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor("#F8FAFC")]),
             ]
-            
+
             log_table.setStyle(TableStyle(t_style))
             student_section.append(log_table)
             student_section.append(Spacer(1, 5))
