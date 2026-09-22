@@ -32,3 +32,13 @@ README.md
 .idea/
 *.sublime-project
 *.sublime-workspace
+# Node & Frontend
+node_modules/
+build/
+dist/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
