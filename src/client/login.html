@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en" data-theme="light"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Login · Expenso</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
+</head><body>
+<div class="auth-wrap"><div class="auth-card">
+  <div class="brand"><span class="logo">₹</span> Expenso</div>
+  <h2>Welcome back</h2>
+  <p class="auth-sub">Sign in to your expense dashboard</p>
+  <form id="loginForm" novalidate>
+    <div class="field"><label>Email</label><input type="email" name="email" placeholder="you@example.com" autocomplete="email"></div>
+    <div class="field"><label>Password</label><input type="password" name="password" placeholder="••••••••" autocomplete="current-password"></div>
+    <div class="err-text" id="err"></div>
+    <button class="btn primary" style="width:100%" type="submit" id="submitBtn">Sign in</button>
+  </form>
+  <p class="auth-alt">Don't have an account? <a href="register.html">Create one</a></p>
+  <p class="auth-alt">Demo: demo@expense.app / demo1234</p>
+</div></div>
+<div class="toasts" id="toasts"></div>
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script src="js/login.js"></script>
+</body></html>

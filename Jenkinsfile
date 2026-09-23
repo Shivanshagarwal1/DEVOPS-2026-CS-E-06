@@ -1,10 +1,13 @@
 pipeline {
     agent any
 
+dev-Shivansh
     triggers {
         githubPush()
     }
 
+
+main
     stages {
 
         stage('Checkout') {
@@ -13,6 +16,7 @@ pipeline {
             }
         }
 
+dev-Shivansh
         stage('Run Tests') {
             steps {
                 dir('signup') {
@@ -58,6 +62,28 @@ Please check the Jenkins console output:
 
 ${env.BUILD_URL}console
 """
+
+        stage('Build') {
+            steps {
+                sh 'echo "Building project..."'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'echo "Running tests..."'
+            }
+        }
+    }
+
+    post {
+        always {
+            emailext(
+                to: 'syed.burhan.441@gmail.com,shivagrawal820@gmail.com,shreyan.sachdeva2402@gmail.com',
+                subject: "Jenkins | ${JOB_NAME} | Build #${BUILD_NUMBER} | ${currentBuild.currentResult}",
+                body: '$DEFAULT_CONTENT',
+                mimeType: 'text/html'
+main
             )
         }
     }

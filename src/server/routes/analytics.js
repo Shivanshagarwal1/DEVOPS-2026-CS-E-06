@@ -1,0 +1,11 @@
+const r = require('express').Router();
+const c = require('../controllers/analyticsController');
+const auth = require('../middleware/auth');
+const ah = require('../utils/ah');
+r.use(auth);
+r.get('/summary', ah(c.summary));
+r.get('/categories', ah(c.categories));
+r.get('/monthly', ah(c.monthly));
+r.get('/trends', ah(c.trends));
+r.get('/income-vs-expenses', ah(c.incomeVsExpenses));
+module.exports = r;
