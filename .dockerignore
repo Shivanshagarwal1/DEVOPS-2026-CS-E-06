@@ -1,0 +1,44 @@
+# Git & Version Control
+.git
+.gitignore
+.github
+
+# Environment variables & secrets (CRITICAL for security)
+.env
+.env.*
+*.pem
+*.key
+
+# Logs & temp files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+tmp/
+temp/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Docker files & docs
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+README.md
+
+# IDE & Editor folders
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+# Node & Frontend
+node_modules/
+build/
+dist/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
