@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Git & Version Control
 .git
 .gitignore
@@ -42,3 +43,14 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+=======
+.git
+.gitignore
+node_modules
+npm-debug.log
+*.pdf
+weekly_reports
+generate_report.py
+Jenkinsfile
+README.md
+>>>>>>> fc5c9f0 (docker setup)
