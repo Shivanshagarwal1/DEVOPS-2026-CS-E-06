@@ -178,4 +178,4 @@ _Add screenshots of the dashboard, analytics, and budgets pages here._
 
 ## Future Improvements
 
-Recurring transactions, multi-currency conversion, budget rollover, email reports, data import (CSV/bank), and 2FA.
+Recurring transactions, multi-currency conversion, budget rollover, email reports, data import (CSV/bank), and 2FA
