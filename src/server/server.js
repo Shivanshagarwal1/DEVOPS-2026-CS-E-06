@@ -2,6 +2,7 @@ require('dotenv').config();
 const path = require('path');
 const express = require('express');
 const cors = require('cors');
+const client = require('prom-client');
 const connectDB = require('./config/db');
 const { notFound, errorHandler } = require('./middleware/error');
 
@@ -9,7 +10,32 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Prometheus Metrics Instrumentation
+client.collectDefaultMetrics({ prefix: 'nodejs_' });
+const httpRequestsTotal = new client.Counter({
+  name: 'http_requests_total',
+  help: 'Total number of HTTP requests processed',
+  labelNames: ['method', 'route', 'status']
+});
+
+app.use((req, res, next) => {
+  res.on('finish', () => {
+    httpRequestsTotal.inc({
+      method: req.method,
+      route: req.route ? req.route.path : req.path,
+      status: res.statusCode
+    });
+  });
+  next();
+});
+
+// Health & Metrics Endpoints
 app.get('/api/health', (req, res) => res.json({ ok: true, time: new Date() }));
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', client.register.contentType);
+  res.end(await client.register.metrics());
+});
+
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/transactions', require('./routes/transactions'));
 app.use('/api/expenses', require('./routes/expenses'));
