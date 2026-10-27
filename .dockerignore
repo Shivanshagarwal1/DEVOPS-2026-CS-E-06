@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Git & Version Control
 .git
 .gitignore
@@ -25,14 +24,20 @@ Thumbs.db
 # Docker files & docs
 Dockerfile*
 docker-compose*.yml
+compose*.yaml
 .dockerignore
 README.md
+*.pdf
+weekly_reports/
+generate_report.py
+Jenkinsfile
 
 # IDE & Editor folders
 .vscode/
 .idea/
 *.sublime-project
 *.sublime-workspace
+
 # Node & Frontend
 node_modules/
 build/
@@ -43,14 +48,3 @@ __pycache__/
 *.pyc
 .venv/
 venv/
-=======
-.git
-.gitignore
-node_modules
-npm-debug.log
-*.pdf
-weekly_reports
-generate_report.py
-Jenkinsfile
-README.md
->>>>>>> fc5c9f0 (docker setup)

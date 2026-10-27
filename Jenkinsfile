@@ -7,6 +7,8 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = 'expense-analytics-app'
+        DOCKER_REGISTRY = 'docker.io'
+        DOCKER_HUB_CREDS = 'docker-hub-credentials'
     }
 
     stages {
@@ -16,33 +18,54 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Run Tests') {
             steps {
-                sh "docker build -t ${DOCKER_IMAGE}:${env.BUILD_NUMBER} ."
+                sh 'npm --prefix src/server test'
             }
         }
 
-        stage('Run Tests') {
+        stage('Build Docker Image') {
             steps {
-                // Adjust this if you have a specific test script for your server
-                sh 'echo "Running tests... (Replace this with actual test command if needed)"'
+                sh "docker build -t ${DOCKER_IMAGE}:${env.BUILD_NUMBER} -t ${DOCKER_IMAGE}:latest ."
+            }
+        }
+
+        stage('Push to Container Registry') {
+            steps {
+                script {
+                    try {
+                        withCredentials([usernamePassword(credentialsId: "${env.DOCKER_HUB_CREDS}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                            sh 'echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin'
+                            sh "docker tag ${DOCKER_IMAGE}:${env.BUILD_NUMBER} ${DOCKER_USERNAME}/${DOCKER_IMAGE}:${env.BUILD_NUMBER}"
+                            sh "docker tag ${DOCKER_IMAGE}:${env.BUILD_NUMBER} ${DOCKER_USERNAME}/${DOCKER_IMAGE}:latest"
+                            sh "docker push ${DOCKER_USERNAME}/${DOCKER_IMAGE}:${env.BUILD_NUMBER}"
+                            sh "docker push ${DOCKER_USERNAME}/${DOCKER_IMAGE}:latest"
+                            echo "Image pushed successfully to Docker Hub."
+                        }
+                    } catch (Exception e) {
+                        echo "Docker Hub credentials not configured in Jenkins. Tagging image locally: ${e.message}"
+                        sh "docker tag ${DOCKER_IMAGE}:${env.BUILD_NUMBER} ${DOCKER_IMAGE}:latest"
+                    }
+                }
+            }
+        }
+
+        stage('Deploy Application (CD)') {
+            steps {
+                script {
+                    echo "Deploying updated application to Docker Compose..."
+                    sh "docker compose up -d --no-deps app"
+                }
             }
         }
     }
 
     post {
-        success {
+        always {
             emailext(
                 to: 'syed.burhan.441@gmail.com,shivagrawal820@gmail.com,shreyan.sachdeva2402@gmail.com',
-                subject: "Jenkins SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: "Build successful.\n\nJob: ${env.JOB_NAME}\nBuild: #${env.BUILD_NUMBER}\nStatus: SUCCESS\n\nConsole:\n${env.BUILD_URL}console"
-            )
-        }
-        failure {
-            emailext(
-                to: 'syed.burhan.441@gmail.com,shivagrawal820@gmail.com,shreyan.sachdeva2402@gmail.com',
-                subject: "Jenkins FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: "Build failed.\n\nJob: ${env.JOB_NAME}\nBuild: #${env.BUILD_NUMBER}\nStatus: FAILURE\n\nPlease check the Jenkins console output:\n${env.BUILD_URL}console"
+                subject: "Jenkins | ${env.JOB_NAME} | Build #${env.BUILD_NUMBER} | ${currentBuild.currentResult}",
+                body: "Build: #${env.BUILD_NUMBER}\nStatus: ${currentBuild.currentResult}\nJob: ${env.JOB_NAME}\nConsole: ${env.BUILD_URL}console"
             )
         }
     }

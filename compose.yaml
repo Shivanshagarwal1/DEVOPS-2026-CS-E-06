@@ -11,12 +11,16 @@ services:
       NODE_ENV: production
       PORT: 5000
       MONGODB_URI: mongodb://mongo:27017/expense_analytics
+      JWT_SECRET: expense-analytics-jwt-secret-key-2026
+      JWT_EXPIRES: 7d
+    volumes:
+      - ./src/server/data:/app/src/server/data
     depends_on:
       - mongo
     restart: unless-stopped
 
   mongo:
-    image: mongo:8
+    image: mongo:7
     container_name: expense-analytics-mongo
     volumes:
       - mongo_data:/data/db

@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo
+  labels:
+    app: mongo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+        - name: mongo
+          image: mongo:7
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: mongo-storage
+              mountPath: /data/db
+      volumes:
+        - name: mongo-storage
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+spec:
+  selector:
+    app: mongo
+  ports:
+    - port: 27017
+      targetPort: 27017
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expense-app
+  labels:
+    app: expense-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expense-app
+  template:
+    metadata:
+      labels:
+        app: expense-app
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "5000"
+    spec:
+      containers:
+        - name: app
+          image: devops-2026-cs-e-06-app:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+          env:
+            - name: PORT
+              value: "5000"
+            - name: NODE_ENV
+              value: "production"
+            - name: MONGODB_URI
+              value: "mongodb://mongo:27017/expense_analytics"
+            - name: JWT_SECRET
+              value: "expense-analytics-jwt-secret-key-2026"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: expense-app-service
+spec:
+  type: ClusterIP
+  selector:
+    app: expense-app
+  ports:
+    - port: 5000
+      targetPort: 5000

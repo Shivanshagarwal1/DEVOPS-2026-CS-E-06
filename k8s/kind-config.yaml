@@ -1,0 +1,12 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: devops-cluster
+nodes:
+- role: control-plane
+  extraPortMappings:
+  - containerPort: 30090
+    hostPort: 9090
+    protocol: TCP
+  - containerPort: 30080
+    hostPort: 3000
+    protocol: TCP

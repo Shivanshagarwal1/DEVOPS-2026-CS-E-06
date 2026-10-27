@@ -1,3 +1,7 @@
 const jwt = require('jsonwebtoken');
-exports.sign = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES || '7d' });
-exports.verify = (t) => jwt.verify(t, process.env.JWT_SECRET);
+
+const JWT_SECRET = process.env.JWT_SECRET || 'expense-analytics-jwt-secret-key-2026';
+const JWT_EXPIRES = process.env.JWT_EXPIRES || '7d';
+
+exports.sign = (id) => jwt.sign({ id }, JWT_SECRET, { expiresIn: JWT_EXPIRES });
+exports.verify = (t) => jwt.verify(t, JWT_SECRET);
