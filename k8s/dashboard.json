@@ -6,8 +6,12 @@
     "tags": ["devops", "kubernetes", "expenso"],
     "timezone": "browser",
     "schemaVersion": 38,
-    "version": 1,
+    "version": 2,
     "refresh": "5s",
+    "time": {
+      "from": "now-5m",
+      "to": "now"
+    },
     "panels": [
       {
         "id": 1,
