@@ -1,0 +1,81 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "ag2iycj3pedc0e",
+    "title": "Kubernetes and DevOps Monitoring",
+    "tags": ["devops", "kubernetes", "expenso"],
+    "timezone": "browser",
+    "schemaVersion": 38,
+    "version": 1,
+    "refresh": "5s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Application Status (expense-app)",
+        "type": "stat",
+        "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+        "targets": [{ "expr": "up{job=\"expense-app\"}", "refId": "A" }],
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {
+                "type": "value",
+                "options": {
+                  "0": { "text": "DOWN", "color": "red" },
+                  "1": { "text": "UP", "color": "green" }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "HTTP Requests Total",
+        "type": "stat",
+        "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+        "targets": [{ "expr": "sum(http_requests_total) or vector(0)", "refId": "A" }]
+      },
+      {
+        "id": 3,
+        "title": "Process Memory Usage",
+        "type": "stat",
+        "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+        "targets": [{ "expr": "nodejs_process_resident_memory_bytes", "refId": "A" }],
+        "fieldConfig": { "defaults": { "unit": "bytes" } }
+      },
+      {
+        "id": 4,
+        "title": "Prometheus Scrape Status",
+        "type": "stat",
+        "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+        "targets": [{ "expr": "count(up == 1)", "refId": "A" }]
+      },
+      {
+        "id": 5,
+        "title": "HTTP Request Rate (req/sec)",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+        "targets": [{ "expr": "sum(rate(http_requests_total[1m])) by (status)", "legendFormat": "Status {{status}}", "refId": "A" }]
+      },
+      {
+        "id": 6,
+        "title": "Node.js CPU Usage",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+        "targets": [
+          { "expr": "rate(nodejs_process_cpu_user_seconds_total[1m])", "legendFormat": "User CPU", "refId": "A" },
+          { "expr": "rate(nodejs_process_cpu_system_seconds_total[1m])", "legendFormat": "System CPU", "refId": "B" }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Kubernetes Node Metrics",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 24, "x": 0, "y": 12 },
+        "targets": [{ "expr": "up{job=\"kubernetes-nodes\"}", "legendFormat": "K8s Node: {{instance}}", "refId": "A" }]
+      }
+    ]
+  },
+  "overwrite": true
+}

@@ -26,6 +26,17 @@ kubectl apply -f k8s/namespace.yaml
 kubectl apply -f k8s/prometheus.yaml
 kubectl apply -f k8s/grafana.yaml
 
+echo "Waiting for Grafana to be ready..."
+for i in {1..30}; do
+  if curl -s -u admin:admin http://localhost:3000/api/health >/dev/null 2>&1; then
+    curl -s -u admin:admin -X POST http://localhost:3000/api/dashboards/db \
+      -H "Content-Type: application/json" \
+      -d @k8s/dashboard.json >/dev/null 2>&1 || true
+    break
+  fi
+  sleep 1
+done
+
 echo "[4/4] Verifying Stack Status..."
 echo ""
 echo "=== Docker Containers ==="

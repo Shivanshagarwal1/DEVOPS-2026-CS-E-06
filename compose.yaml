@@ -20,7 +20,7 @@ services:
     restart: unless-stopped
 
   mongo:
-    image: mongo:7
+    image: mongo:8
     container_name: expense-analytics-mongo
     volumes:
       - mongo_data:/data/db
